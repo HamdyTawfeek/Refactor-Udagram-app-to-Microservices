@@ -1,53 +1,49 @@
-# Udagram Image Filtering Microservice
+# Udacity Project - Refactor Udagram Into Microservices
 
-Udagram is a simple cloud application developed alongside the Udacity Cloud Engineering Nanodegree. It allows users to register and log into a web client, post photos to the feed, and process photos using an image filtering microservice.
-
-The project is split into three parts:
-1. [The Simple Frontend](/udacity-c3-frontend)
-A basic Ionic client web application which consumes the RestAPI Backend. 
-2. [The RestAPI Feed Backend](/udacity-c3-restapi-feed), a Node-Express feed microservice.
-3. [The RestAPI User Backend](/udacity-c3-restapi-user), a Node-Express user microservice.
-
-## Getting Setup
-
-> _tip_: this frontend is designed to work with the RestAPI backends). It is recommended you stand up the backend first, test using Postman, and then the frontend should integrate.
-
-### Installing Node and NPM
-This project depends on Nodejs and Node Package Manager (NPM). Before continuing, you must download and install Node (NPM is included) from [https://nodejs.com/en/download](https://nodejs.org/en/download/).
-
-### Installing Ionic Cli
-The Ionic Command Line Interface is required to serve and build the frontend. Instructions for installing the CLI can be found in the [Ionic Framework Docs](https://ionicframework.com/docs/installation/cli).
-
-### Installing project dependencies
-
-This project uses NPM to manage software dependencies. NPM Relies on the package.json file located in the root of this repository. After cloning, open your terminal and run:
-```bash
-npm install
-```
->_tip_: **npm i** is shorthand for **npm install**
-
-### Setup Backend Node Environment
-You'll need to create a new node server. Open a new terminal within the project directory and run:
-1. Initialize a new project: `npm init`
-2. Install express: `npm i express --save`
-3. Install typescript dependencies: `npm i ts-node-dev tslint typescript  @types/bluebird @types/express @types/node --save-dev`
-4. Look at the `package.json` file from the RestAPI repo and copy the `scripts` block into the auto-generated `package.json` in this project. This will allow you to use shorthand commands like `npm run dev`
+Refactoring [udagram initial monolitic](https://github.com/udacity/cloud-developer/tree/master/course-02/exercises/udacity-c2-restapi) application into separate microservices as follows:
 
 
-### Configure The Backend Endpoint
-Ionic uses enviornment files located in `./src/enviornments/enviornment.*.ts` to load configuration variables at runtime. By default `environment.ts` is used for development and `enviornment.prod.ts` is used for produciton. The `apiHost` variable should be set to your server url either locally or in the cloud.
+- Divide the application into smaller services and extend it with additional service and automatic continuous integration and continuous delivery.
+- Containerize the application, create the Kubernetes resource and deploy it to a Kubernetes cluster.
+- Extend the application with deployments and be able to do rolling-updates and rollbacks.
 
-***
-### Running the Development Server
-Ionic CLI provides an easy to use development server to run and autoreload the frontend. This allows you to make quick changes and see them in real time in your browser. To run the development server, open terminal and run:
+## Usage
+### Installation
+- Prerequisite: It is best to have Ubuntu 18.04, Docker 18.09, KubeOne v0.9.0, Terraform 0.12.8 installed before starting the project.
+- Once the repository has been downloaded, you will need to first install all dependencies by running `npm i`. You will need to repeat this for all `Frontend`, `Restapi-Feed` and `Restapi-user` folders.
+- Also, ensure all environment variables are set up in your `~/.profile`.
+- For Docker:
+    - First, install Docker in your system.
+    - Build images using `docker-compose -f docker-compose-build.yaml build --parallel`
+    - Push the docker images to DockerHub using `docker-compose -f docker-compose-build.yaml push`.
+    - Run application locally using `docker-compose -f docker-compose.yaml up`. **Note** you have to export enviroment varibales needed for the application first. Fill *secrets.example.sh* and Run `source secrets.example.sh`
+    - Go to Localhost:8100 to test. 
+    - Docker deployment complete.
+- For Kubernetes:
+    - Install Kubernetes using the Kubeone instructions given here:  `https://github.com/kubermatic/kubeone/blob/master/docs/quickstart-aws.md`
+    - Follow the setup videos closely, and export the KubeConfig.
+    - Check for the proper setup using `kubectl get pods`.
+    - Set up the secret keys and configmaps for the project. These are the .yaml files in the k8s folder.
+    - Make sure the .yaml files are also pointing to the right Docker images which you set up previously.
+    - Use `kubectl apply -f [file-name]` on the secret key, config map files.
+    - Use `kubectl apply -f [file-name]' again for the remaining .yaml files. If all is set up correctly, you will see all pods running. Test using `kubectl get rs`, `kubectl get deployment`, and `kubectl get pods`.
+    - Forward the deployment port to Localhost:8080 using `kubectl port-forward [name]/reverseproxy-[id] 8080:8080`.
+    - Go to Localhost:8080 to test. 
+    - Kubernetes deployment completed.
+- For Travis:
+    - Ensure your Github account is linked to Travis. This is done via signing up for a Travis account, then from within linking the two together.
+    - Push your folders to Github repository. No need for node_modules nor secrets to be included in the repository. 
+    - Ensure the .travis.yml file is in the root folder of the Github repo. 
+    - Go to Travis, then search for the repository, and then set up new build.
+    - Travis deployment completed.
 
-```bash
-ionic serve
-```
+## Dependencies
 
-### Building the Static Frontend Files
-Ionic CLI can build the frontend into static HTML/CSS/JavaScript files. These files can be uploaded to a host to be consumed by users on the web. Build artifacts are located in `./www`. To build from source, open terminal and run:
-```bash
-ionic build
-```
-***
+There are dependencies on having an S3 bucket provisioned and an RDS postgres instance provisioned if you want to run this locally on your machine
+
+### Images for evidence
+- Attached are the following images which demonstrate the functionality of the project:
+    - Running application;
+    - DockerHub images;
+    - Kubernetes running pods; and
+    - Travis deployment completed.
